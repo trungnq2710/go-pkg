@@ -8,16 +8,14 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
-
-	"gitlab.com/jplatform/jengine/constant"
 )
 
 var (
-	TokenExpired     = errors.New("token is timed out, please log in again")
-	TokenInvalid     = errors.New("token has been invalidated")
-	TokenNotValidYet = errors.New("token not active yet")
-	TokenMalformed   = errors.New("that's not even a token")
-	TokenUnknown     = errors.New("couldn't handle this token")
+	tokenExpired     = errors.New("token is timed out, please log in again")
+	tokenInvalid     = errors.New("token has been invalidated")
+	tokenNotValidYet = errors.New("token not active yet")
+	tokenMalformed   = errors.New("that's not even a token")
+	tokenUnknown     = errors.New("couldn't handle this token")
 )
 
 type Claims struct {
@@ -43,27 +41,27 @@ func CreateToken(userID int32, ttl int64, signed []byte) (string, int64, error) 
 	return tokenString, claims.ExpiresAt.Time.Unix(), err
 }
 
-func VerifyToken(tokensString string) error {
-	_, err := getClaimFromToken(tokensString)
+func VerifyToken(tokensString string, tokenSecret []byte) error {
+	_, err := getClaimFromToken(tokensString, tokenSecret)
 	return err
 }
 
-func ParseToken(tokensString string) (claims *Claims, err error) {
-	return getClaimFromToken(tokensString)
+func ParseToken(tokensString string, tokenSecret []byte) (claims *Claims, err error) {
+	return getClaimFromToken(tokensString, tokenSecret)
 }
 
-func getClaimFromToken(tokensString string) (*Claims, error) {
-	token, err := jwt.ParseWithClaims(tokensString, &Claims{}, secret())
+func getClaimFromToken(tokensString string, tokenSecret []byte) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(tokensString, &Claims{}, secret(tokenSecret))
 	if err != nil {
 		if ve, ok := err.(*jwt.ValidationError); ok {
 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-				return nil, TokenMalformed
+				return nil, tokenMalformed
 			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
-				return nil, TokenExpired
+				return nil, tokenExpired
 			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
-				return nil, TokenNotValidYet
+				return nil, tokenNotValidYet
 			} else {
-				return nil, TokenUnknown
+				return nil, tokenUnknown
 			}
 		}
 	}
@@ -73,8 +71,8 @@ func getClaimFromToken(tokensString string) (*Claims, error) {
 	return nil, err
 }
 
-func secret() jwt.Keyfunc {
+func secret(tokenSecret []byte) jwt.Keyfunc {
 	return func(token *jwt.Token) (interface{}, error) {
-		return []byte(constant.TokenSecret), nil
+		return tokenSecret, nil
 	}
 }

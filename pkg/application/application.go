@@ -8,11 +8,11 @@ import (
 	"log"
 	"sync"
 
-	"gitlab.com/jplatform/jengine/pkg/cycle"
-	"gitlab.com/jplatform/jengine/pkg/errgroup"
-	"gitlab.com/jplatform/jengine/pkg/serial"
-	"gitlab.com/jplatform/jengine/pkg/server"
-	"gitlab.com/jplatform/jengine/pkg/signal"
+	"github.com/trungnq2710/go-pkg/pkg/cycle"
+	"github.com/trungnq2710/go-pkg/pkg/errgroup"
+	"github.com/trungnq2710/go-pkg/pkg/serial"
+	"github.com/trungnq2710/go-pkg/pkg/server"
+	"github.com/trungnq2710/go-pkg/pkg/signal"
 )
 
 type Application struct {

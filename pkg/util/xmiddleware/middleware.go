@@ -9,13 +9,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/jwt/v2"
 
-	"gitlab.com/jplatform/jengine/constant"
-	"gitlab.com/jplatform/jengine/pkg/util/xrest"
+	"github.com/trungnq2710/go-pkg/pkg/util/xrest"
 )
 
-func Protected() fiber.Handler {
+func Protected(tokenSecret []byte) fiber.Handler {
 	return jwtware.New(jwtware.Config{
-		SigningKey:     []byte(constant.TokenSecret),
+		SigningKey:     tokenSecret,
 		ErrorHandler:   errorHandler,
 		SuccessHandler: successHandler(),
 	})

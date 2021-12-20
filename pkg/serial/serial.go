@@ -3,7 +3,7 @@
 
 package serial
 
-import "gitlab.com/jplatform/jengine/pkg/try"
+import "github.com/trungnq2710/go-pkg/pkg/try"
 
 func SerialUntilError(fns ...func() error) func() error {
 	return func() error {

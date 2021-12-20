@@ -10,7 +10,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"gitlab.com/jplatform/jengine/pkg/util/xstring"
+	"github.com/trungnq2710/go-pkg/pkg/util/xstring"
 )
 
 func Try(fn func() error, cleaner func()) (res error) {
