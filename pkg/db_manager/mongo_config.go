@@ -1,7 +1,7 @@
 // Created at 11/29/2021 10:12 PM
 // Developer: trungnq2710 (trungnq2710@gmail.com)
 
-package orm_manager
+package db_manager
 
 import (
 	"context"
@@ -18,7 +18,11 @@ type MongoConfig struct {
 	DSN    string
 }
 
-func (m *MongoConfig) valid() (err error) {
+func (m *MongoConfig) GetName() string {
+	return m.Name
+}
+
+func (m *MongoConfig) Valid() (err error) {
 	if m.Name == "" {
 		err = fmt.Errorf("config name is empty")
 		return
@@ -34,7 +38,7 @@ func (m *MongoConfig) valid() (err error) {
 	return
 }
 
-func (m *MongoConfig) initClient() (*mongo.Database, error) {
+func (m *MongoConfig) InitClient() (*mongo.Database, error) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(m.DSN))
 	if err != nil {

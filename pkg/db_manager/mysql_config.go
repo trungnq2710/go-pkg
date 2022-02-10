@@ -1,7 +1,7 @@
 // Created at 11/29/2021 10:12 PM
 // Developer: trungnq2710 (trungnq2710@gmail.com)
 
-package orm_manager
+package db_manager
 
 import (
 	"fmt"
@@ -17,7 +17,11 @@ type MySqlConfig struct {
 	LogLevel int
 }
 
-func (m *MySqlConfig) valid() (err error) {
+func (m *MySqlConfig) GetName() string {
+	return m.Name
+}
+
+func (m *MySqlConfig) Valid() (err error) {
 	if m.Name == "" {
 		err = fmt.Errorf("config name is empty")
 		return
@@ -29,8 +33,8 @@ func (m *MySqlConfig) valid() (err error) {
 	return
 }
 
-func (m *MySqlConfig) initClient() (*gorm.DB, error) {
-	if err := m.valid(); err != nil {
+func (m *MySqlConfig) InitClient() (interface{}, error) {
+	if err := m.Valid(); err != nil {
 		return nil, err
 	}
 	return gorm.Open(mysql.Open(m.DSN), &gorm.Config{

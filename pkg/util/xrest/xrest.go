@@ -14,7 +14,8 @@ func Error(c *fiber.Ctx, err string) error {
 
 func ErrorWithStatus(c *fiber.Ctx, status int, err string) error {
 	return c.Status(status).
-		JSON(fiber.Map{"status": "error",
+		JSON(fiber.Map{
+			"status":  "error",
 			"success": false,
 			"message": err,
 		})
