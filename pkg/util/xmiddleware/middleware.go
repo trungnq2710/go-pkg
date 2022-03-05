@@ -7,16 +7,17 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/jwt/v2"
-
+	"github.com/gofiber/jwt/v3"
 	"github.com/trungnq2710/go-pkg/pkg/util/xrest"
 )
 
-func Protected(tokenSecret []byte) fiber.Handler {
+type HasPermitFunc func(c *fiber.Ctx) bool
+
+func Protected(tokenSecret []byte, hasPermit HasPermitFunc) fiber.Handler {
 	return jwtware.New(jwtware.Config{
 		SigningKey:     tokenSecret,
 		ErrorHandler:   errorHandler,
-		SuccessHandler: successHandler(),
+		SuccessHandler: successHandler(hasPermit),
 	})
 }
 
@@ -29,8 +30,12 @@ func errorHandler(c *fiber.Ctx, err error) error {
 	return xrest.ErrorWithStatus(c, fiber.StatusUnauthorized, "invalid or expired jwt")
 }
 
-func successHandler() fiber.Handler {
+func successHandler(hasPermit HasPermitFunc) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Next()
+		if hasPermit == nil || hasPermit(c) {
+			return c.Next()
+		}
+
+		return xrest.ErrorWithStatus(c, fiber.StatusForbidden, "permit denied")
 	}
 }

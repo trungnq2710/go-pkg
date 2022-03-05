@@ -4,8 +4,10 @@
 package xjwt
 
 import (
+	"strconv"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
 )
@@ -19,11 +21,11 @@ var (
 )
 
 type Claims struct {
-	UID int32
+	UID int64
 	jwt.RegisteredClaims
 }
 
-func BuildClaims(uid int32, ttl int64) Claims {
+func BuildClaims(uid, ttl int64) Claims {
 	now := time.Now()
 	return Claims{
 		UID: uid,
@@ -34,8 +36,8 @@ func BuildClaims(uid int32, ttl int64) Claims {
 		}}
 }
 
-func CreateToken(userID int32, ttl int64, signed []byte) (string, int64, error) {
-	claims := BuildClaims(userID, ttl)
+func CreateToken(uid, ttl int64, signed []byte) (string, int64, error) {
+	claims := BuildClaims(uid, ttl)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(signed)
 	return tokenString, claims.ExpiresAt.Time.Unix(), err
@@ -74,5 +76,46 @@ func getClaimFromToken(tokensString string, tokenSecret []byte) (*Claims, error)
 func secret(tokenSecret []byte) jwt.Keyfunc {
 	return func(token *jwt.Token) (interface{}, error) {
 		return tokenSecret, nil
+	}
+}
+
+func GetUIDFromFiberCtx(c *fiber.Ctx) (int64, int, error) {
+	tmp := c.Locals("user")
+
+	token, ok := tmp.(*jwt.Token)
+	if !ok {
+		return 0, fiber.StatusInternalServerError, errors.New("internal token type invalid")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return 0, fiber.StatusInternalServerError, errors.New("internal claims type invalid")
+	}
+
+	iUID := claims["UID"]
+	if iUID == nil {
+		return 0, fiber.StatusUnauthorized, errors.New("invalid or expired jwt")
+	}
+
+	uid, err := convertInterfaceToInt64(iUID)
+	if err != nil {
+		return 0, fiber.StatusInternalServerError, errors.New("internal uid type invalid")
+	}
+
+	return uid, fiber.StatusOK, nil
+}
+
+func convertInterfaceToInt64(t interface{}) (int64, error) {
+	switch t := t.(type) {
+	case int64:
+		return t, nil
+	case int:
+		return int64(t), nil
+	case string:
+		return strconv.ParseInt(t, 10, 64)
+	case float64:
+		return int64(t), nil
+	default:
+		return 0, errors.Errorf("type %T not supported", t)
 	}
 }
