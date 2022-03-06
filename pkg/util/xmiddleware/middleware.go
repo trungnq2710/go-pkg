@@ -25,9 +25,9 @@ func errorHandler(c *fiber.Ctx, err error) error {
 	log.Printf("[%s] - [%s] => %s - err: %s ", c.Method(), c.IP(), c.OriginalURL(), err.Error())
 
 	if err.Error() == "Missing or malformed JWT" {
-		return xrest.ErrorWithStatus(c, fiber.StatusBadRequest, "missing or malformed jwt")
+		return xrest.ErrorWithStatus(c, xrest.STATUS_BAD_REQUEST, "missing or malformed jwt")
 	}
-	return xrest.ErrorWithStatus(c, fiber.StatusUnauthorized, "invalid or expired jwt")
+	return xrest.ErrorWithStatus(c, xrest.STATUS_TOKEN_INVALID, "invalid or expired jwt")
 }
 
 func successHandler(hasPermit HasPermitFunc) fiber.Handler {
@@ -36,6 +36,6 @@ func successHandler(hasPermit HasPermitFunc) fiber.Handler {
 			return c.Next()
 		}
 
-		return xrest.ErrorWithStatus(c, fiber.StatusForbidden, "permit denied")
+		return xrest.ErrorWithStatus(c, xrest.STATUS_PERMIT_DENIED, "permit denied")
 	}
 }
