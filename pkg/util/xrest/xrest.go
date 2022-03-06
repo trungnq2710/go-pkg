@@ -7,15 +7,25 @@ import "github.com/gofiber/fiber/v2"
 
 func Error(c *fiber.Ctx, err string) error {
 	return c.JSON(&fiber.Map{
+		"status":  STATUS_ERROR,
 		"success": false,
 		"message": err,
 	})
 }
 
-func ErrorWithStatus(c *fiber.Ctx, status int, err string) error {
-	return c.Status(status).
+func ErrorWithHTTPStatus(c *fiber.Ctx, httpStatus int, status, err string) error {
+	return c.Status(httpStatus).
 		JSON(fiber.Map{
-			"status":  "error",
+			"status":  status,
+			"success": false,
+			"message": err,
+		})
+}
+
+func ErrorWithStatus(c *fiber.Ctx, status, err string) error {
+	return c.Status(fiber.StatusOK).
+		JSON(fiber.Map{
+			"status":  status,
 			"success": false,
 			"message": err,
 		})
@@ -26,6 +36,7 @@ func WithoutData(c *fiber.Ctx, msg string) error {
 		msg = "success"
 	}
 	return c.JSON(&fiber.Map{
+		"status":  STATUS_SUCCESS,
 		"success": true,
 		"message": msg,
 	})
@@ -36,6 +47,7 @@ func WithData(c *fiber.Ctx, msg string, data interface{}) error {
 		msg = "success"
 	}
 	return c.JSON(&fiber.Map{
+		"status":  STATUS_SUCCESS,
 		"success": true,
 		"message": msg,
 		"data":    data,
@@ -47,6 +59,7 @@ func WithDataset(c *fiber.Ctx, msg string, dataset interface{}) error {
 		msg = "success"
 	}
 	return c.JSON(&fiber.Map{
+		"status":  STATUS_SUCCESS,
 		"success": true,
 		"message": msg,
 		"dataset": dataset,
@@ -58,6 +71,7 @@ func WithOffsetID(c *fiber.Ctx, msg string, dataset interface{}, total int32) er
 		msg = "success"
 	}
 	return c.JSON(&fiber.Map{
+		"status":  STATUS_SUCCESS,
 		"success": true,
 		"message": msg,
 		"dataset": dataset,
@@ -70,6 +84,7 @@ func WithPagination(c *fiber.Ctx, msg string, dataset interface{}, paginate inte
 		msg = "success"
 	}
 	return c.JSON(&fiber.Map{
+		"status":   STATUS_SUCCESS,
 		"success":  true,
 		"message":  msg,
 		"dataset":  dataset,
