@@ -40,5 +40,11 @@ func (s *Server) Serve() error {
 }
 
 func (s *Server) Stop() error {
-	return s.App.Shutdown()
+	log.Println("server stop...")
+	err := s.App.Shutdown()
+	if err != nil {
+		log.Println("server stop err: ", err.Error())
+	}
+	log.Println("server stopped")
+	return err
 }
