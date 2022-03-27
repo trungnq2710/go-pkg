@@ -5,11 +5,13 @@ package xfiber
 
 import (
 	"fmt"
+	"github.com/gofiber/fiber/v2"
 )
 
 type Config struct {
 	Host      string
 	Port      int
+	Views     fiber.Views
 	websocket bool
 }
 
@@ -27,6 +29,11 @@ func (config *Config) WithHost(host string) *Config {
 
 func (config *Config) WithPort(port int) *Config {
 	config.Port = port
+	return config
+}
+
+func (config *Config) WithViews(v fiber.Views) *Config {
+	config.Views = v
 	return config
 }
 

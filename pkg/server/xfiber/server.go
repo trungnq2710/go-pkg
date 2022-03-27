@@ -25,7 +25,9 @@ func newServer(config *Config) *Server {
 	config.Port = listener.Addr().(*net.TCPAddr).Port
 
 	return &Server{
-		App:      fiber.New(),
+		App: fiber.New(fiber.Config{
+			Views: config.Views,
+		}),
 		config:   config,
 		listener: listener,
 	}
