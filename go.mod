@@ -7,6 +7,7 @@ require (
 	github.com/gofiber/jwt/v3 v3.2.7
 	github.com/gofiber/websocket/v2 v2.0.14
 	github.com/golang-jwt/jwt/v4 v4.3.0
+	github.com/joho/godotenv v1.4.0
 	github.com/pkg/errors v0.9.1
 	go.mongodb.org/mongo-driver v1.8.1
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
